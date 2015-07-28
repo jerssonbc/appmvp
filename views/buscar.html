@@ -1,0 +1,185 @@
+<div class="container">
+	<div class="row">
+		<div class="col-md-offset-1 col-md-4">
+			<div class="list-group">
+				<div class="form-group">
+					<div class="input-group">
+						<div class="input-group-addon">
+						<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+						</div>
+						<input type="text" ng-model="buscarTarea" class="form-control" placeholder="Buscar">
+					</div>
+				</div>
+				<!-- LISTA TAREAS -->
+				<a ng-repeat="tarea in tareas | filter:{ titulo:buscarTarea,status:'!cancelada'} | orderBy: 'datetime':true"
+						 ng-href="#/buscar/{{tarea.$id}}">
+					<div class="list-group-item">
+						<div class="row-picture">
+							<img ng-src="{{tarea.gravatar}}" alt="" class="circle">
+						</div>
+						<div class="row-content">
+							<h4 class="list-group-item-heading">
+								{{tarea.titulo | limitTo:25 }}{{tarea.titulo.length>25? "...":""}}
+							</h4>
+							<span class="list-group-item-text">
+								<span am-time-ago="tarea.datetime"></span>
+							</span>
+						</div>
+						<div class="payment">
+							<div>S/.{{tarea.total}}</div>
+							<span class="label status {{tarea.status}}">{{tarea.status}}</span>
+						</div>
+					</div>
+					<div class="list-group-separator"></div>
+				</a>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div ng-show="listMode">
+				<img src="images/browse.jpg" alt="" class="img-responsive img-browse">
+			</div>
+			<div ng-show="!listMode">
+				<!-- header-->
+				<div class="row">
+					<div class="col-md-8">
+						<h3>{{selectedTarea.titulo}}</h3>
+						<span>
+							<img src="{{selectedTarea.gravatar}}" alt="" class="img-circle gravatar">
+							Posteado por {{selectedTarea.nombre}} -
+							<span am-time-ago="selectedTarea.datetime"></span>&nbsp;
+							<span class="label status {{selectedTarea.status}}">{{selectedTarea.status}}</span>
+						</span>
+					</div>
+					<div class="col-md-4 title">
+						<div class="price-tag">
+							S/. {{selectedTarea.total}}
+							<div ng-show="isTareaCreator(selectedTarea) && isOpen(selectedTarea)">
+								<div class="btn-group">
+									<a href="" class="btn btn-warning">Admin</a>
+									<a href="" class="btn btn-warning dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+									<ul class="dropdown-menu">
+										<li><a href="" data-toggle="modal" data-target="#ediModal">EDITAR TAREA</a></li>
+										<li class="divider"></li>
+										<li><a href="" ng-click="cancelarTarea(selectedTarea.$id)">CANCELAR TAREA</a></li>
+									</ul>
+								</div>
+							</div>
+							<div ng-show="isOpen(selectedTarea) && !isTareaCreator(selectedTarea) && !ofertada">
+								<button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#offModal">
+									Hacer oferta
+								</button>
+							</div>
+							
+							<div ng-show="isAssignee(selectedTarea) && !isCompleted(selectedTarea)">
+								<button class="btn btn-danger btn-sm" ng-click="completaTarea(selectedTarea.$id)">Completada</button>
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+				<br>
+
+				<!-- descripcion -->
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<h3 class="panel-title">Descripción</h3>
+							</div>
+							<div class="panel-body">
+								{{selectedTarea.descripcion}}
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- ofertas-->
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title">
+								Ofertas
+							</h3>
+						</div>
+						<div class="panel-body">
+							<div class="title" ng-hide="ofertas && ofertas.length > 0">
+								<span>NO HAY OFFERTAS PARA ESTA TAREA AÚN</span>
+							</div>
+
+							<div class="row" ng-repeat="oferta in ofertas">
+								<div class="col-md-10">
+									<button ng-show="oferta.aceptada" class="btn btn-success btn-xs disabled">
+										Asignada
+									</button>
+									<buton ng-show="isTareaCreator(selectedTarea) && isOpen(selectedTarea)" class="btn btn-info btn-xs" ng-click="aceptarOferta(oferta.$id,oferta.uid)">
+										Aceptar - S/.{{oferta.total}}
+									</buton>
+
+									<button ng-show="isOfferMaker(oferta) && isOpen(selectedTarea)" class="btn btn-danger btn-xs" ng-click="cancelarOferta(oferta.$id)">Cancelar mi oferta - S/.{{oferta.total}}</button>
+									<img ng-src="{{oferta.gravatar}}" alt="" class="img-circle offer gravatar">
+									<span>{{oferta.nombre}}</span>
+								</div>
+							</div>
+							<br>
+						</div>
+							
+						</div>
+					</div>
+				</div>
+
+
+
+				<!-- coments -->
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<h3 class="panel-title">Comentarios</h3>
+							</div>
+							<div class="panel-body">
+								<div class="title" ng-hide="comentarios && comentarios.length > 0 ">
+									<span>No hay comentarios acerca de esta tarea</span>
+								</div><br>
+
+								<div class="row" ng-repeat="com in comentarios">
+									<div class="col-md-1">
+										<img ng-src="{{com.gravatar}}" alt="" class="img-circle comment gravatar">
+									</div>
+									<div class="col-md-11">
+										<div class="well well-sm cmt">
+											<span class="cmt-title">{{com.nombre}}:</span>
+											<span class="cmt-time pull-right"><span am-time-ago="{{com.datetime}}"></span></span><br>
+											<span>{{com.content}}</span>
+										</div>
+									</div>
+								</div><br>
+								<div class="row" ng-show="isOpen(selectedTarea)">
+									<div class="col-md-12">
+										<form ng-submit="addComentario()">
+											<div class="input-group">
+												<div class="input-group-addon">
+													<img ng-src="{{usuario.perfil.gravatar}}" alt="" class="img-circle comment gravatar">
+												</div>
+												<input type="text" ng-model="content" cols="10" rows="3" class="form-control" placeholder="comenta aquí ..." required><br>
+											</div>
+											<span class="pull-right">
+												<input type="submit" class="btn btn-info" value="Comentar">
+											</span>
+										</form>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<div  ng-include="'views/partials/editar.html'"></div>
+<div  ng-include="'views/partials/oferta.html'"></div>

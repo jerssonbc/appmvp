@@ -1,0 +1,23 @@
+<div class="modal fade" id="posModal" ng-controller="TareaController">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="panel panel-warning title">
+				<div class="panel-heading title">
+				
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h3 class="panel-title">Postear una Tarea (GRATIS)</h3>	
+				</div>
+				<div class="panel-body">
+					<form ng-submit="crearTarea()">
+						<input type="text" ng-model="tarea.titulo" class="form-control" placeholder="Titulo de la Tarea" required> <br>
+						<textarea ng-model="tarea.descripcion" class="form-control" placeholder="Describe que tu necesitas" required ></textarea><br>
+						<input type="number" ng-model="tarea.total" class="form-control" placeholder="¿ Cuánto tu pagarias ?" required><br>
+						<input type="submit" class="btn btn-warning" value="Postear ahora">
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
