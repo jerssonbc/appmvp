@@ -45,11 +45,15 @@ app.factory('Oferta',function(FURL,$firebase,$q,Auth,Tarea){
 		},
 		aceptarOferta:function(tareaId,ofertaId,runnerId){
 			var o=this.getOferta(tareaId,ofertaId);
-			return o.$update({aceptada:true}).then(function(){
+			return o.$update({aceptada:true})
+			.then(function(){
 
 				var t=Tarea.getTarea(tareaId);
 
 				return t.$update({status:'asignada',corredor:runnerId});
+			})
+			.then(function(){
+				return Tarea.crearTareasDeUsuario(tareaId);
 			});
 		}
 	};

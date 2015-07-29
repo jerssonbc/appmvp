@@ -14,7 +14,30 @@ app.factory('Tarea',function(FURL,$firebase,Auth){
 
 		crearTarea:function(tarea){
 			tarea.datetime=Firebase.ServerValue.TIMESTAMP;
-			return tareas.$add(tarea);
+			return tareas.$add(tarea)
+				.then(function(newTarea){
+					var obj={
+						tareaId:newTarea.key(),
+						tipo:true,
+						titulo:tarea.titulo
+					};
+					$firebase(ref.child('usuario_tareas').child(tarea.poster)).$push(obj);
+					return newTarea;
+			});
+		},
+
+		crearTareasDeUsuario:function(tareaId){
+			Tarea.getTarea(tareaId)
+				.$asObject()
+				.$loaded()
+				.then(function(tarea){
+					var obj={
+						tareaId:tareaId,
+						tipo:false,
+						titulo:tarea.titulo
+					};
+					return $firebase(ref.child('usuario_tareas').child(tarea.corredor)).$push(obj);
+				});
 		},
 
 		editTarea:function(tarea){

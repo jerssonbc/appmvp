@@ -1,0 +1,35 @@
+<div class="row">
+	<div class="col-md-10 col-md-offset-1">
+		<h2 class="title">
+			Tablero
+		</h2><br>
+		<div class="row">
+			<div class="col-md-6">
+				<div class="panel panel-warning">
+					<div class="panel-heading">
+						<h3 class="panel-title">Tareas Posteadas <span class="badge">{{numPoster}}</span></h3>
+					</div>
+					<div class="panel-body">
+						<div ng-if="numPoster === 0">Tu no tienes ninguna tarea posteada aún</div>
+						<div ng-repeat="tarea in tareasPoster">
+							<a ng-href="#/buscar/{{tarea.tareaId}}">{{tarea.titulo}}</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="panel panel-success">
+					<div class="panel-heading">
+						<h3 class="panel-title">Tareas apostadas <span class="badge">{{numRunner}}</span></h3>
+					</div>
+					<div class="panel-body">
+						<div ng-if="numRunner === 0">Tu no tienes ninguna tarea adquirida aún</div>
+						<div ng-repeat="tarea in tareasRunner">
+							<a ng-href="#/buscar/{{tarea.tareaId}}">{{tarea.titulo}}</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
